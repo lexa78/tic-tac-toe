@@ -14,6 +14,14 @@ public class Turns {
         turnsArray [cellY][cellX] = value;
     }
 
+    void setDefaultValue() {
+        for (int i = 0; i < DrawPanel.DEFAULT_COUNT_CELLS; i++) {
+            for (int j = 0; j < DrawPanel.DEFAULT_COUNT_CELLS; j++) {
+                turnsArray[i][j] = DrawPanel.DEFAULT_VALUE;
+            }
+        }
+    }
+
     int[][] getTurnsArray() {
         return turnsArray;
     }

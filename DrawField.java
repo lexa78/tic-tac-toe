@@ -1,7 +1,8 @@
 package com.xo;
 import java.awt.*;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
 
 public class DrawField extends JFrame {
     public static final int DEFAULT_WIDTH = 900;
@@ -9,12 +10,26 @@ public class DrawField extends JFrame {
 
     public DrawField(String title) {
         setTitle(title);
-        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        add(new DrawPanel());
+        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT + 50);
+        DrawPanel drawPanel = new DrawPanel();
+        add(drawPanel, BorderLayout.CENTER);
+        add(new DrawButton(drawPanel), BorderLayout.SOUTH);
     }
 }
-    class DrawPanel extends JPanel
-    {
+    class DrawButton extends JPanel {
+        public JButton startOver = new JButton("Начать заново");
+        public JButton deleteTurn = new JButton("Отменить ход");
+        DrawButton (DrawPanel drawPanel) {
+            setLayout(new FlowLayout());
+            add(startOver);
+            add(deleteTurn);
+            ActionListener al = new ButtonClick(drawPanel, this);
+            startOver.addActionListener(al);
+            deleteTurn.addActionListener(al);
+        }
+    }
+
+    class DrawPanel extends JPanel  {
         public static final int DEFAULT_COUNT_CELLS = 3;
         static final int MIN_COORDINATA = 0;
         static final int MAX_COORDINATA = 2;
@@ -27,12 +42,14 @@ public class DrawField extends JFrame {
         int cellCoordinataY = DEFAULT_VALUE;
         ClickHandling clickHandling;
         Turns turns = new Turns(DEFAULT_COUNT_CELLS, DEFAULT_COUNT_CELLS);
+        TurnsList turnsList;
         DrawPanel() {
             stepCells = DrawField.DEFAULT_WIDTH / DEFAULT_COUNT_CELLS;
             clickHandling = new ClickHandling(this);
             addMouseListener(clickHandling);
-
+            turnsList  = new TurnsList();
         }
+
         public void paintComponent(Graphics g)
         {
             super.paintComponent(g);

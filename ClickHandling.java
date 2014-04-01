@@ -1,6 +1,8 @@
 package com.xo;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -10,6 +12,9 @@ public class ClickHandling implements MouseListener {
     public ClickHandling (DrawPanel parent) {
         field = parent;
     }
+
+    public int firstElement = DrawPanel.DEFAULT_VALUE;
+
     private int searchCell(int x) {
         int i =0;
         int count = 0;
@@ -46,75 +51,72 @@ public class ClickHandling implements MouseListener {
             return;
         }
 
-
-/*        for (int i = 0; i < DrawPanel.DEFAULT_COUNT_CELLS; i++) {
-            column = field.turns.getTurnsArrayHorizontal(i);
-            vacantCell = getRowForAnalyse(column, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
-            if (vacantCell == DrawPanel.NOTHING_VALUE) {
-                vacantCell = getRowForAnalyse(column, DrawPanel.DEFAULT_PEOPLE1_CHAR);
-            }
-            if (vacantCell != DrawPanel.NOTHING_VALUE) {
-                field.turns.setCellTurnsArray(vacantCell, i, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
-                return;
-            }
-        }
-
-        for (int i = 0; i < DrawPanel.DEFAULT_COUNT_CELLS; i++) {
-            column = field.turns.getTurnsArrayVertical(i);
-            vacantCell = getRowForAnalyse(column, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
-            if (vacantCell == DrawPanel.NOTHING_VALUE) {
-                vacantCell = getRowForAnalyse(column, DrawPanel.DEFAULT_PEOPLE1_CHAR);
-            }
-            if (vacantCell != DrawPanel.NOTHING_VALUE) {
-                field.turns.setCellTurnsArray(i, vacantCell, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
-                return;
-            }
-        }
-
-        column = field.turns.getDiagonal();
-        vacantCell = getRowForAnalyse(column, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
-        if (vacantCell == DrawPanel.NOTHING_VALUE) {
-            vacantCell = getRowForAnalyse(column, DrawPanel.DEFAULT_PEOPLE1_CHAR);
-        }
-        if (vacantCell != DrawPanel.NOTHING_VALUE) {
-            field.turns.setCellTurnsArray(vacantCell, vacantCell, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
-            return;
-        }
-
-        column = field.turns.getReverseDiagonal();
-        vacantCell = getRowForAnalyse(column, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
-        if (vacantCell == DrawPanel.NOTHING_VALUE) {
-            vacantCell = getRowForAnalyse(column, DrawPanel.DEFAULT_PEOPLE1_CHAR);
-        }
-        if (vacantCell != DrawPanel.NOTHING_VALUE) {
-            switch(vacantCell) {
-                case 0:
-                    field.turns.setCellTurnsArray(2, vacantCell, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
-                    return;
-                case 1:
-                    field.turns.setCellTurnsArray(vacantCell, vacantCell, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
-                    return;
-                case 2:
-                    field.turns.setCellTurnsArray(0, vacantCell, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
-                    return;
-            }
-        }*/
-
         vacantCell = DrawPanel.DEFAULT_COUNT_CELLS/2;
         if (field.turns.getCellValue(vacantCell, vacantCell) == DrawPanel.DEFAULT_VALUE) {
             field.turns.setCellTurnsArray(vacantCell, vacantCell, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
+            field.turnsList.setTurnsListValue(togetherInStirng(vacantCell, vacantCell));
             return;
         }
         else {
-            for (int i = 0; i < DrawPanel.DEFAULT_COUNT_CELLS; i++) {
-                vacantCell = field.turns.searchEmptyCell(i);
-                if (vacantCell != DrawPanel.NOTHING_VALUE) {
-                    field.turns.setCellTurnsArray(vacantCell, i, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
+            if (field.turnsList.getSize() == DrawPanel.DEFAULT_COUNT_CELLS) {
+                int [] coordinatArr= field.turnsList.fromStringToArray(field.turnsList.getTurnsListLastValue());
+                if ((coordinatArr[0] == DrawPanel.MAX_COORDINATA)&&(coordinatArr[1] == DrawPanel.MAX_COORDINATA)) {
+                    if (field.turns.getCellValue(DrawPanel.MIN_COORDINATA, coordinatArr[0]) == DrawPanel.DEFAULT_VALUE) {
+                        field.turns.setCellTurnsArray(coordinatArr[0], DrawPanel.MIN_COORDINATA, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
+                        field.turnsList.setTurnsListValue(togetherInStirng(coordinatArr[0], DrawPanel.MIN_COORDINATA));
+                        return;
+                    }
+                }
+                else
+                if ((coordinatArr[0] == DrawPanel.MIN_COORDINATA)&&(coordinatArr[1] == DrawPanel.MIN_COORDINATA)) {
+                    if (field.turns.getCellValue(DrawPanel.MAX_COORDINATA, coordinatArr[0]) == DrawPanel.DEFAULT_VALUE) {
+                        field.turns.setCellTurnsArray(coordinatArr[0], DrawPanel.MAX_COORDINATA, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
+                        field.turnsList.setTurnsListValue(togetherInStirng(coordinatArr[0], DrawPanel.MAX_COORDINATA));
+                        return;
+                    }
+                }
+                else
+                if ((coordinatArr[0] == DrawPanel.MAX_COORDINATA)&&(coordinatArr[1] == DrawPanel.MIN_COORDINATA)) {
+                    if (field.turns.getCellValue(DrawPanel.MAX_COORDINATA, coordinatArr[0]) == DrawPanel.DEFAULT_VALUE) {
+                        field.turns.setCellTurnsArray(coordinatArr[0], DrawPanel.MAX_COORDINATA, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
+                        field.turnsList.setTurnsListValue(togetherInStirng(coordinatArr[0], DrawPanel.MAX_COORDINATA));
+                        return;
+                    }
+                }
+                else
+                if ((coordinatArr[0] == DrawPanel.MIN_COORDINATA)&&(coordinatArr[1] == DrawPanel.MAX_COORDINATA)) {
+                    if (field.turns.getCellValue(coordinatArr[1], DrawPanel.MAX_COORDINATA) == DrawPanel.DEFAULT_VALUE) {
+                        field.turns.setCellTurnsArray(DrawPanel.MAX_COORDINATA, coordinatArr[1], DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
+                        field.turnsList.setTurnsListValue(togetherInStirng(DrawPanel.MAX_COORDINATA, coordinatArr[1]));
+                        return;
+                    }
+                }
+                else {
+                    if (findEmptyCell()) {
+                        return;
+                    }
+                }
+            }
+            else {
+                if (findEmptyCell()) {
                     return;
                 }
             }
         }
     }
+    private boolean findEmptyCell() {
+        int vacantCell;
+        for (int i = 0; i < DrawPanel.DEFAULT_COUNT_CELLS; i++) {
+            vacantCell = field.turns.searchEmptyCell(i);
+            if (vacantCell != DrawPanel.NOTHING_VALUE) {
+                field.turns.setCellTurnsArray(vacantCell, i, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
+                field.turnsList.setTurnsListValue(togetherInStirng(vacantCell, i));
+                return true;
+            }
+        }
+        return false;
+    }
+
     private int getRowForAnalyse (int [] row, int symbol) {
         int count = 0;
         int rememberI = 0;
@@ -190,10 +192,43 @@ public class ClickHandling implements MouseListener {
                     }
                 }
                 field.turns.setCellTurnsArray(x, y, DrawPanel.DEFAULT_COMP_OR_PEOPLE2_CHAR);
+                field.turnsList.setTurnsListValue(togetherInStirng(x,y));
                 return true;
             }
         }
         return false;
+    }
+
+    String togetherInStirng (int x, int y) {
+        return "" + x + "," + y;
+    }
+
+    boolean gameOverControl() {
+        for (int i = 0; i < DrawPanel.DEFAULT_COUNT_CELLS; i++) {
+            if ((getLineForGameOverControl(field.turns.getTurnsArrayHorizontal(i))) ||
+               (getLineForGameOverControl(field.turns.getTurnsArrayVertical(i)))) {
+                    return true;
+            }
+        }
+        if ((getLineForGameOverControl(field.turns.getDiagonal())) ||
+            (getLineForGameOverControl(field.turns.getReverseDiagonal()))) {
+                return true;
+        }
+        return false;
+    }
+
+    boolean getLineForGameOverControl(int [] line) {
+        boolean flag = false;
+        firstElement = line[0];
+        for (int i = 1; i < DrawPanel.DEFAULT_COUNT_CELLS; i++) {
+            if ((firstElement == line[i])&&(firstElement != DrawPanel.DEFAULT_VALUE)) {
+                flag = true;
+            }
+            else {
+                return false;
+            }
+        }
+        return flag;
     }
 
     public void mouseClicked(MouseEvent e) {}
@@ -205,17 +240,42 @@ public class ClickHandling implements MouseListener {
     public void mousePressed(MouseEvent e) {
         int x = e.getX();
         int y = e.getY();
+        String winner;
         field.cellCoordinataY = searchCoordinataConners(searchCell(y));
         field.cellCoordinataX = searchCoordinataConners(searchCell(x));
         if (field.turns.getCellValue(searchCell(y), searchCell(x)) == DrawPanel.DEFAULT_VALUE) {
             field.turns.setCellTurnsArray(searchCell(x), searchCell(y), DrawPanel.DEFAULT_PEOPLE1_CHAR);
-        }
-        else {
+            field.turnsList.setTurnsListValue(togetherInStirng(searchCell(x), searchCell(y)));
+        } else {
             JOptionPane.showMessageDialog(null, "Сюда уже ничего не поставить");
             return;
         }
-        compThinking();
-        field.repaint();
+        if (field.turnsList.getSize() < DrawPanel.DEFAULT_COUNT_CELLS * DrawPanel.DEFAULT_COUNT_CELLS) {
+            if (!gameOverControl()) {
+                compThinking();
+            }
+        } else {
+            field.repaint();
+            winner = "No winner";
+            JOptionPane.showMessageDialog(null, "Game over " + System.getProperty("line.separator") + winner);
+            return;
+        }
+        if (field.turnsList.getSize() >= DrawPanel.DEFAULT_COUNT_CELLS * 2 - 1) {
+            if (gameOverControl()) {
+                field.repaint();
+                if (firstElement == DrawPanel.DEFAULT_PEOPLE1_CHAR) {
+                    winner = "You win!";
+                } else {
+                    winner = "You loose, comp win!!!";
+                }
+                JOptionPane.showMessageDialog(null, "Game over " + System.getProperty("line.separator") + winner);
+                return;
+            } else {
+                field.repaint();
+            }
+        } else {
+            field.repaint();
+        }
     }
 
     public void mouseReleased(MouseEvent e) {}
